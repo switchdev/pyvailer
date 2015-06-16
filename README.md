@@ -5,6 +5,8 @@ pyvailer is a Python based video thumbnail generator. Basically, it's a very sim
 
 FFMPEG is required for pyvailer to work. For pyvailer itself, either download the pyvailer.py file to your harddrive or clone the git repository. Just import pyvailer into your own program and call the functions you need.
 
+**Note: pyvailer has only been tested on Linux/Ubuntu (64 Bit) and Python 3x. It shouldn't be too much work to get it working with Python 2x. I have no idea if it works on Windows yet. I'll try and get a Python 2x version available, as well as get cross-platform compatibility done.**
+
 ## Using pyvailer
 
 ### As a standalone program

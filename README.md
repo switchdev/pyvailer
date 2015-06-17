@@ -67,6 +67,10 @@ pyvailer will also give you a basic command line output of all the videos loaded
 
 `thumblist.listVideos()`
 
+You can also set a parameter for every video item in your instance using the `setAll` function. For example, you've used the `addVideo` command a few times and now have five videos in your `thumblist`, but you added them all without specifying the output filetype, and they all defaulted to `png`. Using the `setAll` function you can change the parameter of all your video items.
+
+`thumblist.setAll(ftype='jpg')`
+
 ### pyvailer Options/Tweaking
 
 pyvailer generates warning messages through the logging module when things go wrong. You can turn this off by setting `PYVAILER_LOGGING` to `False`.

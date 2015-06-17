@@ -48,3 +48,5 @@ checks to see if
 `/home/user/video.png'
 
 exists, and if so returns True.
+
+(check commit)

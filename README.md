@@ -1,19 +1,15 @@
 # pyvailer
-pyvailer is a Python based video thumbnail generator. Basically, it's a very simple (so far) Python module that takes a video and generates an image based off a randomly selected frame. At this time, pyvailer is simply wrapping existing FFMPEG commands in a convenient and reusable format. Obviously, this means that in order for pyvailer to function you'll need FFMPEG installed.
+pyvailer is a module for utilizing FFMPEG to create thumbnails (single frame images) of given video files. Naturally, FFMPEG needs to be installed on your system for this module to work.
 
-pyvailer is currently in very earlier stages and offers little functionality. The original scope was to create a nice little Python script that would create thumbnails of videos, but I can see it offering a few more utilities as well. There's still a lot to be added, including:
+pyvailer is currently in very earlier stages and offers only a little functionality. The original scope was to create a nice little Python script that would create thumbnails of videos, but I can see it offering a few more utilities as well. The current todo list:
 
-- Selecting custom output location and filename
-- Selecting custom output image type
-- Customing image output (size, quality, etc)
 - Generating multiple thumbnail images from a single video
 - Batch processing from text files, xml, etc
-- Redesigning the code to be object focused, rather than just a set of functions
 - Cleaning and optimizing
 
 ## Installation
 
-FFMPEG is required for pyvailer to work. For pyvailer itself, either download the pyvailer.py file to your harddrive or clone the git repository. Just import pyvailer into your own program and call the functions you need.
+In order to use pyvailer, FFMPEG must be installed on your system. There are no other prerequisites. All you need to get started is either clone the github repository or download the pyvailer.py file.
 
 **Note: pyvailer has only been tested on Linux/Ubuntu (64 Bit) and Python 3x. It shouldn't be too much work to get it working with Python 2x. I have no idea if it works on Windows yet. I'll try and get a Python 2x version available, as well as get cross-platform compatibility done.**
 
@@ -27,32 +23,52 @@ Copy the pyvailer.py file somewhere on your harddrive. From the command line, in
 
 This will generate a `myvideo.png` image file within the same folder in which the video file is located.
 
+pyvailer also takes the following optional command line arguments:
+```
+-f F            Output image file type
+-q Q            Output image quality
+-height HEIGHT  Output image height (default = 100)
+-width WIDTH    Output image width (default = 100)
+-name NAME      Output image name
+-fld FLD        Output image folder
+```
 ### As a module
 
-Copy the pyvailer.py into the same folder as your project's script (you *can* go through the hassle of manually installer pyvailer the proper way, so that Python will always find it, but while it remains a single-source module I'm not going to provide this as standard). Import it as you would any other module. A list of available functions below.
+Copy the pyvailer.py into the same folder as your project's script (you *can* go through the hassle of manually installing pyvailer the proper way, so that Python will always find it, but while it remains a single-source module I'm not going to provide this as standard). Import it as you would any other module.
 
-#### pyvailer.CreateThumb(*video*)
+The module currently contains only one class called *Thumbnailer*, which will provide all the necessary functions for easily generating thumbnail/single-still-images from video files. To start you'll want to create an instance of the class where you can load in some video data.
+```
+from pyvailer import Thumbnailer
 
-This function creates a thumbnail image for a video (will full path) passed to it. Returns false if something goes wrong (note: do not rely on this, not fully implemented). Will always overwrite existing thumbnail.
+thumblist = Thumbnailer()
+````
+You add in videos by using the `addVideo` command.
 
-#### pyvailer.GetThumbPos(*video*, *step=5*)
+`thumblist.addVideo(video='/path/to/video.mp4')`
 
-This function returns a string - to a time format that FFMPEG understands - containing a random time position within a passed video file. Used for determining a random frame from which to create a thumbnail from. Returns as:
+The function `addVideo` also takes the following arguments:
+```
+ftype			filetype (see PYVAILER_FTYPES)
+quality			FFMPEG CRT option (experimental for now)
+output_name		specify a different name for the outputted image file (e.g., myimage, without extension)
+output_folder	specify an output folder (default same as video)
+width			specify the width of the image (default 100)
+height			specify the height of the image (default 100)
+```
+So far, only the information pyvailer *needs* to know has been loaded in, but no thumbnails have been generated yet. To do this, call the `createThumb` function, passing argument `0`:
 
-`HH:MM:SS.000`
+`thumblist.createThumb(0)`
 
-The *step* variable is for minimum amounts between integers returned by the random number generator. It would be beneficial to set a low step number for short video files (1-2) and larger numbers for longer video files (to save on resources used to generate random number).
+This will tell FFMPEG to create an image file based on the first `addVideo` entry to that class instance (here, thumblist). If you add another video by calling `addVideo` again, it will be stored at position `1`. You're then only required to call `thumblist.createThumb(1)` to generate the image. However, if you have a large number of videos in your `Thumbnailer()` instance, you can generate all the thumbnails at once by calling:
 
-#### pyvailer.ThumbExists(*video*)
+`thumblist.createAllThumbs()`
 
-Checks to see if a thumbnail exists for a provided video file. For example, passing the following to the *video* variable:
+pyvailer will also give you a basic command line output of all the videos loaded into your `Thumbnailer()` instance by using the `listVideos()` function:
 
-`/home/user/video.mp4`
+`thumblist.listVideos()`
 
-checks to see if
+### pyvailer Options/Tweaking
 
-`/home/user/video.png'
+pyvailer generates warning messages through the logging module when things go wrong. You can turn this off by setting `PYVAILER_LOGGING` to `False`.
 
-exists, and if so returns True.
-
-(check commit)
+By default, pyvailer only lets you output `png, jpg, jpeg, gif` and `bmp` files. FFMPEG likely supports more, but there's a chance that you could need non-standard codecs on your system to support it. This module simply passes your specified output filename, including the extension, and FFMPEG sorts out the rest. You can add more filetypes to the `PYVAILER_FTYPES` list. However, if FFMPEG doesn't recognise the extension, `createThumb` will run through, no errors will be generated by pyvailer and no output file will appear.
